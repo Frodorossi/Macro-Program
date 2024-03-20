@@ -1,0 +1,1 @@
+[["mPress", "1", ""], ["mMultiPress", "down", "8"], ["mMultiPress", "right", "2"], ["mPress", "a", ""], ["mMultiPress", "right", "4"], ["mMultiPress", "up", "3"], ["mWrite", "testing", ""], ["mWait", "2.0", ""], ["mMultiPress", "down", "10"], ["mHold", "ctrl", ""], ["mPress", "v", ""], ["mRelease", "ctrl", ""], ["mPress", "up", ""], ["mPress", "down", ""]]

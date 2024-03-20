@@ -1,0 +1,26 @@
+
+Change screens (alt tab)
+find something (ctrl f)
+arrow keys
+wait
+press and hold
+release
+copy
+paste
+paste no formatting
+write
+Triggering key
+
+Condensed to buttons
+hotkeys
+single press buttons
+multi press buttons
+hold key
+release key
+wait
+write
+triggering key
+copy
+move up
+move down
+remove

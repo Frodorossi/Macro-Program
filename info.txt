@@ -1,0 +1,4 @@
+
+designer.exe
+
+auto-py-to-exe
