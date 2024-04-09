@@ -1,1 +1,1 @@
-[["mMultiPress", "left", "2"], ["mPress", "down", ""], ["mhotKey", "ctrl", "c"], ["mhotKey", "alt", "tab"], ["mhotKey", "ctrl", "f"], ["mhotKey", "ctrl", "v"], ["mhotKey", "alt", "tab"], ["mMultiPress", "right", "2"]]
+[["mMultiPress", "left", "2"], ["mPress", "down", ""], ["mhotKey", "ctrl", "c"], ["mWait", "0.2", ""], ["mhotKey", "alt", "tab"], ["mhotKey", "ctrl", "f"], ["mhotKey", "ctrl", "v"], ["mWait", "0.2", ""], ["mhotKey", "alt", "tab"], ["mMultiPress", "right", "2"]]
