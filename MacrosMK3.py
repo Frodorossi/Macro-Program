@@ -418,8 +418,7 @@ class coordinateWindow(QDialog):
         self.setWindowOpacity(0.60)
     
     def mouseMoveEvent(self, event):
-        x = event.x()
-        y = event.y()
+        x, y = pag.position()
         self.clabel.setText('X:'+str(x)+' Y:'+str(y))
 
     
