@@ -17,8 +17,6 @@ import numpy as np
 import json
 import os
 import threading
-import concurrent.futures
-import queue
 
 class window(QMainWindow):
     def __init__(self):
@@ -28,6 +26,9 @@ class window(QMainWindow):
         
         #Connecting UI buttons to code
         self.bEditMacro = self.findChild(QPushButton, 'bEditMacro')
+        self.bDeleteMacro = self.findChild(QPushButton, 'bDeleteMacro')
+        self.bMasterMoveUp = self.findChild(QPushButton, 'bMasterMoveUp')
+        self.bMasterMoveDown = self.findChild(QPushButton, 'bMasterMoveDown')
         self.bAssign1 = self.findChild(QPushButton, 'bAssign1')
         self.bAssign2 = self.findChild(QPushButton, 'bAssign2')
         self.bAssign3 = self.findChild(QPushButton, 'bAssign3')
@@ -52,6 +53,7 @@ class window(QMainWindow):
         self.bTrigger = self.findChild(QPushButton, 'bTrigger')
         self.bMousePosition = self.findChild(QPushButton, 'bMousePosition')
         self.bClear = self.findChild(QPushButton, 'bClear')
+        self.bSaveToMasterList = self.findChild(QPushButton, 'bSaveToMasterList')
         self.bRepeats = self.findChild(QPushButton, 'bRepeats')
         
         self.MasterlistWidget = self.findChild(QListWidget, 'MasterlistWidget')
@@ -68,6 +70,10 @@ class window(QMainWindow):
         self.actionAcceptable_Inputs = self.findChild(QAction, 'actionAcceptable_Inputs')
         
         #Connecting buttons to functions
+        self.bEditMacro.clicked.connect(self.EditMacro)
+        self.bDeleteMacro.clicked.connect(self.DeleteMacro)
+        self.bMasterMoveUp.clicked.connect(self.MasterMoveUp)
+        self.bMasterMoveDown.clicked.connect(self.MasterMoveDown)
         self.bAssign1.clicked.connect(self.AssignMacro1)
         self.bAssign2.clicked.connect(self.AssignMacro2)
         self.bAssign3.clicked.connect(self.AssignMacro3)
@@ -92,6 +98,7 @@ class window(QMainWindow):
         self.bTrigger.clicked.connect(self.TriggeringKey)
         self.bMousePosition.clicked.connect(self.openCoordinateWindow)
         self.bClear.clicked.connect(self.ListClear)
+        self.bSaveToMasterList.clicked.connect(self.SaveToMasterList)
         self.bRepeats.clicked.connect(self.getRepeats)
 
         self.actionOpen.triggered.connect(self.openFile)
@@ -99,49 +106,115 @@ class window(QMainWindow):
         self.actionInstructions.triggered.connect(self.openInstructions)
         self.actionAcceptable_Inputs.triggered.connect(self.openInputs)
     
-    def AssignMacro1():
-        pass
+    #======================================================================
+    # This section takes input from the user to assign a key to be the trigger for one of 4 possible Macros to be called.
+    # Macros are chosen from the masterList and copied to the armedMacros list that is used for calling of macros.
     
-    def AssignMacro2():
-        pass
+    def EditMacro(self):
+        if not len(masterList) == 0:
+            currentIndex = self.MasterlistWidget.currentRow()
+            editList.clear()
+            for j in range(len(masterList[currentIndex])-1):
+                editList.append(masterList[currentIndex][j+1])
+            self.EditlistWidget.clear()
+            self.repopulate()
     
-    def AssignMacro3():
-        pass
+    def DeleteMacro(self):
+        if not len(masterList) == 0:
+            currentIndex = self.MasterlistWidget.currentRow()
+            self.MasterlistWidget.takeItem(currentIndex)
+            masterList.pop(currentIndex)
     
-    def AssignMacro4():
-        pass
+    def MasterMoveUp(self):
+        currentIndex = self.MasterlistWidget.currentRow()
+        if not currentIndex < 1:
+            last = self.MasterlistWidget.takeItem(currentIndex)
+            self.MasterlistWidget.insertItem(currentIndex-1, last)
+            self.MasterlistWidget.setCurrentRow(currentIndex-1)
+            masterList.insert(currentIndex-1, masterList.pop(currentIndex))
     
-    '''
-    def MacroExecutor(queue):
-        while True:
-            print('ME ran')
-            time.sleep(1)
+    def MasterMoveDown(self):
+        currentIndex = self.MasterlistWidget.currentRow()
+        if not currentIndex == len(masterList)-1:
+            last = self.MasterlistWidget.takeItem(currentIndex)
+            self.MasterlistWidget.insertItem(currentIndex+1, last)
+            self.MasterlistWidget.setCurrentRow(currentIndex+1)
+            masterList.insert(currentIndex+1, masterList.pop(currentIndex))
     
-    def queueCreator(queue):
-        while True:
-            print('QC ran')
-            time.sleep(1)
-    '''
+    def AssignMacro1(self):
+        text, ok = QInputDialog.getText(self, 'Macro 1', 'Input key to trigger Macro')
+        if ok and text is not None:
+            if text in AcceptableInput:
+                armedMacros[0].clear()
+                armedMacros[0].append(str(text))
+                repeats = self.getRepeats()
+                armedMacros[0].append(str(repeats))
+                masterIndex = self.MasterlistWidget.currentRow()
+                for i in range(len(masterList[masterIndex])):
+                    armedMacros[0].append(masterList[masterIndex][i])
+                print(armedMacros)
+                self.Assigned1.clear()
+                self.Assigned1.insertItem(0, '\'' + str(armedMacros[0][1]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[0][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+            else:
+                self.msg()
     
-   # pipeline = queue.Queue(maxsize=10)
-    #event = threading.Event()
-    '''
-    t1 = threading.Thread(target= MacroExecutor, args=(pipeline), daemon=True)
-    t2 = threading.Thread(target= queueCreator, args=(pipeline), daemon=True)
-    t1.start()
-    t2.start()
-    '''
+    def AssignMacro2(self):
+        text, ok = QInputDialog.getText(self, 'Macro 2', 'Input key to trigger Macro')
+        if ok and text is not None:
+            if text in AcceptableInput:
+                armedMacros[1].clear()
+                armedMacros[1].append(str(text))
+                repeats = self.getRepeats()
+                armedMacros[0].append(str(repeats))
+                masterIndex = self.MasterlistWidget.currentRow()
+                for i in range(len(masterList[masterIndex])):
+                    armedMacros[1].append(masterList[masterIndex][i])
+                print(armedMacros)
+                self.Assigned2.clear()
+                self.Assigned2.insertItem(0, '\'' + str(armedMacros[1][1]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[1][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+            else:
+                self.msg()
     
-    '''
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-        executor.submit(__init__)
-        executor.submit(MacroExecutor, pipeline, event)
-        executor.submit(queueCreator, pipeline, event)
+    def AssignMacro3(self):
+        text, ok = QInputDialog.getText(self, 'Macro 3', 'Input key to trigger Macro')
+        if ok and text is not None:
+            if text in AcceptableInput:
+                armedMacros[2].clear()
+                armedMacros[2].append(str(text))
+                repeats = self.getRepeats()
+                armedMacros[0].append(str(repeats))
+                masterIndex = self.MasterlistWidget.currentRow()
+                for i in range(len(masterList[masterIndex])):
+                    armedMacros[2].append(masterList[masterIndex][i])
+                print(armedMacros)
+                self.Assigned3.clear()
+                self.Assigned3.insertItem(0, '\'' + str(armedMacros[2][1]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[2][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+            else:
+                self.msg()
     
-    def closeEvent(self, event):
-        print('close event called')
-        event.set()
-        '''
+    def AssignMacro4(self):
+        text, ok = QInputDialog.getText(self, 'Macro 4', 'Input key to trigger Macro')
+        if ok and text is not None:
+            if text in AcceptableInput:
+                armedMacros[3].clear()
+                armedMacros[3].append(str(text))
+                repeats = self.getRepeats()
+                armedMacros[0].append(str(repeats))
+                masterIndex = self.MasterlistWidget.currentRow()
+                for i in range(len(masterList[masterIndex])):
+                    armedMacros[3].append(masterList[masterIndex][i])
+                print(armedMacros)
+                self.Assigned4.clear()
+                self.Assigned4.insertItem(0, '\'' + str(armedMacros[3][1]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[3][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+            else:
+                self.msg()
+    
+    #=================================================================================
+    
+    #=================================================================================
+    # This section is for the buttons that create and modify the macro in the EditListWidget and the editList.
+    # The right list widget is tied to the editList and is meant to be temporary for creating and editing macros
+    # and saving them to the masterList. 
     
     def hotKey(self):
         currentIndex = self.EditlistWidget.currentRow()
@@ -391,24 +464,62 @@ class window(QMainWindow):
         self.EditlistWidget.insertItem(currentIndex+1, 'Click and Drag to: X'+str(x)+' Y'+str(y))
         self.EditlistWidget.setCurrentRow(currentIndex+1)
     
+    #===========================================================================================
+    
+    #===========================================================================================
+    # This section is for buttons that modify the MasterListWidget and the masterList that stores all the macros for use.
+    
+    def SaveToMasterList(self):
+        overwrite = False
+        text, ok = QInputDialog.getText(self, 'Name', 'What would you like to name this Macro?')
+        if ok and text is not None:
+            MlistIndex = -1
+            print('Master list is ' + str(masterList))
+            if len(masterList) > 0:
+                for j in range(len(masterList)):
+                    if text == masterList[j][0]:
+                        overwrite = self.overwriteMsg(text)
+                        if overwrite == False:
+                            return
+                        MlistIndex = j
+                        print(masterList[j])
+                        print(masterList[j][0])
+                        masterList[j] = [masterList[j][0]]
+                        print('Name found in Master list, new value for ' + masterList[j][0] + ' is ' + str(masterList[j]))
+            if MlistIndex == -1:
+                print('Name not found in Master List, appending to end')
+                MlistIndex = len(masterList)
+                masterList.append([text])
+            for i in range(len(editList)):
+                masterList[MlistIndex].append(editList[i])
+            print('Full Master list is now ' + str(masterList))
+            print('Edit list is ' + str(editList))
+            self.updateMasterListWidget()
+    
+    #===========================================================================================
+    
+    # The triggering key (subject to name change) is what arms the macros. Before this key is pressed, the macros will not run
+    # when the activation keys are presed
+    
     def TriggeringKey(self):
         global running
         if running == False:
-            if x.is_alive():
-                print('joining')
-                x.join()
             x =threading.Thread(target=runMacro, daemon= True)
             x.start()
             print('hey')
             
-            '''executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-            executor.submit(runMacro)'''
-            
     def msg(self):
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setWindowTitle('Incorrect input')
         msg.setText('The input you entered cannot be accepted. Check the acceptable inputs list')
         msg.exec_()
+    
+    def overwriteMsg(self, name):
+        msg = QMessageBox.question(self, 'Overwrite', 'You are about to overwrite ' + str(name) +', would you like to continue?', buttons = QMessageBox.Yes | QMessageBox.No)
+        if msg == QMessageBox.Yes:
+            return True
+        else:
+            return False
     
     def openFile(self):
         global editList
@@ -444,6 +555,11 @@ class window(QMainWindow):
     def repopulate(self):
         for i in range(len(editList)):
             self.repopDictionary[editList[i][0]](self, editList[i][1], editList[i][2], i)
+    
+    def updateMasterListWidget(self):
+        self.MasterlistWidget.clear()
+        for i in range(len(masterList)):
+            self.MasterlistWidget.insertItem(i, masterList[i][0])
 
     def openInputs(self):
         inputWindow().exec_()
@@ -457,10 +573,11 @@ class window(QMainWindow):
     def getRepeats(self):
         repeats, ok = QInputDialog.getInt(self, 'Repeats', 'Input how many times to repeat the macro')
         if ok and repeats is not None:
-            global Repeats
-            Repeats = repeats
-            self.repeatsList.clear()
-            self.repeatsList.insertItem(0, 'Repeats: ' + str(Repeats))
+            return repeats
+            #global Repeats
+            #Repeats = repeats
+            #self.repeatsList.clear()
+            #self.repeatsList.insertItem(0, 'Repeats: ' + str(Repeats))
             
 
         
@@ -499,18 +616,15 @@ AcceptableInput = [' ', '!', '"', '#', '$', '%', '&', "'", '(',
                     'add', 'alt', 'backspace', 'capslock', 'clear', 'ctrl', 'del', 'delete',
                     'divide', 'down', 'end', 'enter', 'esc', 'escape', 'f1', 'f10',
                     'f11', 'f12', 'f13', 'f14', 'f15', 'f16', 'f17', 'f18', 'f19', 'f2', 'f20',
-                    'f21', 'f22', 'f23', 'f24', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9',
-                    'left', 'pagedown', 'pageup', 'pgdn',
+                    'f21', 'f22', 'f23', 'f24', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'insert',
+                    'left', 'pagedown', 'pageup', 'pgdn', 'win', 
                     'pgup', 'printscreen', 'prntscrn',
                     'prtsc', 'prtscr', 'return', 'right', 
                     'shift', 'space', 'subtract', 'tab','up', 'command']
 
 editList = []
 masterList = []
-macro1 = []
-macro2 = []
-macro3 = []
-macro4 = []
+armedMacros = [[''], [''], [''], ['']]
 running = False
 directory = os.getcwd()
 Repeats = 1
@@ -575,12 +689,15 @@ callDictionary = {
     
 def show(key):
     global running
-    print(key)
-    if key == Key.insert:
-        begin()
-    if key == Key.esc:
-        running = False
-        return False
+    global armedMacros
+    print(str(key))
+    for i in range(len(armedMacros)):
+        if str(key) == 'Key.'+ armedMacros[i][0]:
+            print('hola')
+            begin(i)
+        if key == Key.esc:
+            running = False
+            return False
 
 def runMacro():
     global running
@@ -589,12 +706,13 @@ def runMacro():
         with Listener(on_press=show) as listener:
             listener.join()
 
-def begin():
-    for j in range(Repeats):
-        for i in range(len(editList)):
+def begin(macroNumber):
+    Repeats = armedMacros[macroNumber][1]
+    for j in range(int(Repeats)):
+        for i in range(len(armedMacros[macroNumber])-3):
             if keyboard.is_pressed('esc'):
                 break
-            callDictionary[editList[i][0]](editList[i][1], editList[i][2])
+            callDictionary[armedMacros[macroNumber][i+3][0]](armedMacros[macroNumber][i+3][1], armedMacros[macroNumber][i+3][2])
 
 def app():
     app = QApplication(sys.argv)
@@ -602,27 +720,7 @@ def app():
     win.show()
     sys.exit(app.exec_())
 
-def MacroExecutor(queue):
-        while True:
-            print('ME ran')
-            time.sleep(1)
-    
-def queueCreator(queue):
-    while True:
-        print('QC ran')
-        time.sleep(1)
-
-def closeEvent(event):
-        print('close event called')
-        event.set()
-
 if __name__ == "__main__":
-    pipeline = queue.Queue(maxsize=10)
-    event = threading.Event()
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-        executor.submit(app)
-        executor.submit(MacroExecutor, pipeline, event)
-        executor.submit(queueCreator, pipeline, event)
     
-    #app()
+    app()
 
