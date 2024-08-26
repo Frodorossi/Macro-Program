@@ -154,7 +154,7 @@ class window(QMainWindow):
                     armedMacros[0].append(masterList[masterIndex][i])
                 print(armedMacros)
                 self.Assigned1.clear()
-                self.Assigned1.insertItem(0, '\'' + str(armedMacros[0][1]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[0][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+                self.Assigned1.insertItem(0, '\'' + str(armedMacros[0][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[0][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
             else:
                 self.msg()
     
@@ -165,13 +165,13 @@ class window(QMainWindow):
                 armedMacros[1].clear()
                 armedMacros[1].append(str(text))
                 repeats = self.getRepeats()
-                armedMacros[0].append(str(repeats))
+                armedMacros[1].append(str(repeats))
                 masterIndex = self.MasterlistWidget.currentRow()
                 for i in range(len(masterList[masterIndex])):
                     armedMacros[1].append(masterList[masterIndex][i])
                 print(armedMacros)
                 self.Assigned2.clear()
-                self.Assigned2.insertItem(0, '\'' + str(armedMacros[1][1]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[1][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+                self.Assigned2.insertItem(0, '\'' + str(armedMacros[1][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[1][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
             else:
                 self.msg()
     
@@ -182,13 +182,13 @@ class window(QMainWindow):
                 armedMacros[2].clear()
                 armedMacros[2].append(str(text))
                 repeats = self.getRepeats()
-                armedMacros[0].append(str(repeats))
+                armedMacros[2].append(str(repeats))
                 masterIndex = self.MasterlistWidget.currentRow()
                 for i in range(len(masterList[masterIndex])):
                     armedMacros[2].append(masterList[masterIndex][i])
                 print(armedMacros)
                 self.Assigned3.clear()
-                self.Assigned3.insertItem(0, '\'' + str(armedMacros[2][1]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[2][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+                self.Assigned3.insertItem(0, '\'' + str(armedMacros[2][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[2][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
             else:
                 self.msg()
     
@@ -199,13 +199,13 @@ class window(QMainWindow):
                 armedMacros[3].clear()
                 armedMacros[3].append(str(text))
                 repeats = self.getRepeats()
-                armedMacros[0].append(str(repeats))
+                armedMacros[3].append(str(repeats))
                 masterIndex = self.MasterlistWidget.currentRow()
                 for i in range(len(masterList[masterIndex])):
                     armedMacros[3].append(masterList[masterIndex][i])
                 print(armedMacros)
                 self.Assigned4.clear()
-                self.Assigned4.insertItem(0, '\'' + str(armedMacros[3][1]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[3][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+                self.Assigned4.insertItem(0, '\'' + str(armedMacros[3][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[3][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
             else:
                 self.msg()
     
