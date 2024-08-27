@@ -626,7 +626,7 @@ editList = []
 masterList = []
 armedMacros = [[''], [''], [''], ['']]
 running = False
-directory = os.getcwd()
+directory = os.path.dirname(os.path.realpath(__file__))
 Repeats = 1
 
 def mhotKey(x, y):
@@ -692,12 +692,15 @@ def show(key):
     global armedMacros
     print(str(key))
     for i in range(len(armedMacros)):
-        if str(key) == 'Key.'+ armedMacros[i][0]:
+        macrokey = armedMacros[i][0]
+        if str(key) == 'Key.' + macrokey:
             print('hola')
-            begin(i)
+            begin(i, macrokey)
+        '''
         if key == Key.esc:
             running = False
             return False
+            '''
 
 def runMacro():
     global running
@@ -706,13 +709,20 @@ def runMacro():
         with Listener(on_press=show) as listener:
             listener.join()
 
-def begin(macroNumber):
-    Repeats = armedMacros[macroNumber][1]
-    for j in range(int(Repeats)):
+def begin(macroNumber, macrokey):
+    Repeats = int(armedMacros[macroNumber][1])
+    if Repeats == 0:
+        Repeats = -1
+    k = 0
+    while k != Repeats:
+        k += 1
+        #for j in range(int(Repeats)):
         for i in range(len(armedMacros[macroNumber])-3):
             if keyboard.is_pressed('esc'):
+                k = Repeats
                 break
             callDictionary[armedMacros[macroNumber][i+3][0]](armedMacros[macroNumber][i+3][1], armedMacros[macroNumber][i+3][2])
+    print('its done')
 
 def app():
     app = QApplication(sys.argv)
