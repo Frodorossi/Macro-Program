@@ -25,6 +25,7 @@ class window(QMainWindow):
         uic.loadUi('MacrosUI.ui', self)
         
         #Connecting UI buttons to code
+        self.bSaveMasterList = self.findChild(QPushButton, 'bSaveMasterList')
         self.bEditMacro = self.findChild(QPushButton, 'bEditMacro')
         self.bDeleteMacro = self.findChild(QPushButton, 'bDeleteMacro')
         self.bMasterMoveUp = self.findChild(QPushButton, 'bMasterMoveUp')
@@ -54,7 +55,6 @@ class window(QMainWindow):
         self.bMousePosition = self.findChild(QPushButton, 'bMousePosition')
         self.bClear = self.findChild(QPushButton, 'bClear')
         self.bSaveToMasterList = self.findChild(QPushButton, 'bSaveToMasterList')
-        self.bRepeats = self.findChild(QPushButton, 'bRepeats')
         
         self.MasterlistWidget = self.findChild(QListWidget, 'MasterlistWidget')
         self.Assigned1 = self.findChild(QListWidget, 'Assigned1')
@@ -62,7 +62,6 @@ class window(QMainWindow):
         self.Assigned3 = self.findChild(QListWidget, 'Assigned3')
         self.Assigned4 = self.findChild(QListWidget, 'Assigned4')
         self.EditlistWidget = self.findChild(QListWidget, 'EditlistWidget')
-        self.repeatsList = self.findChild(QListWidget, 'Repeats')
         
         self.actionOpen = self.findChild(QAction, 'actionOpen')
         self.actionSave = self.findChild(QAction, 'actionSave')
@@ -70,6 +69,7 @@ class window(QMainWindow):
         self.actionAcceptable_Inputs = self.findChild(QAction, 'actionAcceptable_Inputs')
         
         #Connecting buttons to functions
+        self.bSaveMasterList.clicked.connect(self.saveMasterList)
         self.bEditMacro.clicked.connect(self.EditMacro)
         self.bDeleteMacro.clicked.connect(self.DeleteMacro)
         self.bMasterMoveUp.clicked.connect(self.MasterMoveUp)
@@ -99,12 +99,13 @@ class window(QMainWindow):
         self.bMousePosition.clicked.connect(self.openCoordinateWindow)
         self.bClear.clicked.connect(self.ListClear)
         self.bSaveToMasterList.clicked.connect(self.SaveToMasterList)
-        self.bRepeats.clicked.connect(self.getRepeats)
 
         self.actionOpen.triggered.connect(self.openFile)
         self.actionSave.triggered.connect(self.saveFile)
         self.actionInstructions.triggered.connect(self.openInstructions)
         self.actionAcceptable_Inputs.triggered.connect(self.openInputs)
+        
+        self.getMasterList()
     
     #======================================================================
     # This section takes input from the user to assign a key to be the trigger for one of 4 possible Macros to be called.
@@ -117,7 +118,7 @@ class window(QMainWindow):
             for j in range(len(masterList[currentIndex])-1):
                 editList.append(masterList[currentIndex][j+1])
             self.EditlistWidget.clear()
-            self.repopulate()
+            self.repopulateEditList()
     
     def DeleteMacro(self):
         if not len(masterList) == 0:
@@ -153,8 +154,7 @@ class window(QMainWindow):
                 for i in range(len(masterList[masterIndex])):
                     armedMacros[0].append(masterList[masterIndex][i])
                 print(armedMacros)
-                self.Assigned1.clear()
-                self.Assigned1.insertItem(0, '\'' + str(armedMacros[0][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[0][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+                self.updateArmedMacros()
             else:
                 self.msg()
     
@@ -170,8 +170,7 @@ class window(QMainWindow):
                 for i in range(len(masterList[masterIndex])):
                     armedMacros[1].append(masterList[masterIndex][i])
                 print(armedMacros)
-                self.Assigned2.clear()
-                self.Assigned2.insertItem(0, '\'' + str(armedMacros[1][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[1][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+                self.updateArmedMacros()
             else:
                 self.msg()
     
@@ -187,8 +186,7 @@ class window(QMainWindow):
                 for i in range(len(masterList[masterIndex])):
                     armedMacros[2].append(masterList[masterIndex][i])
                 print(armedMacros)
-                self.Assigned3.clear()
-                self.Assigned3.insertItem(0, '\'' + str(armedMacros[2][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[2][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+                self.updateArmedMacros()
             else:
                 self.msg()
     
@@ -204,8 +202,7 @@ class window(QMainWindow):
                 for i in range(len(masterList[masterIndex])):
                     armedMacros[3].append(masterList[masterIndex][i])
                 print(armedMacros)
-                self.Assigned4.clear()
-                self.Assigned4.insertItem(0, '\'' + str(armedMacros[3][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[3][0]) +'\'' + ' key, and will run ' + str(repeats) + ' times.')
+                self.updateArmedMacros()
             else:
                 self.msg()
     
@@ -528,7 +525,7 @@ class window(QMainWindow):
             self.EditlistWidget.clear()
             editList.clear()
             editList = json.load(open(oname))
-            self.repopulate()
+            self.repopulateEditList()
     
     def saveFile(self):
         sname, _ = QFileDialog.getSaveFileName(self, 'Save File', directory +'\\Saves', 'JSON Files (*.json)')
@@ -552,7 +549,7 @@ class window(QMainWindow):
     'mClickandDrag': CD2
     }
     
-    def repopulate(self):
+    def repopulateEditList(self):
         for i in range(len(editList)):
             self.repopDictionary[editList[i][0]](self, editList[i][1], editList[i][2], i)
     
@@ -560,6 +557,59 @@ class window(QMainWindow):
         self.MasterlistWidget.clear()
         for i in range(len(masterList)):
             self.MasterlistWidget.insertItem(i, masterList[i][0])
+
+    def updateArmedMacros(self):
+        self.Assigned1.clear()
+        try:
+            self.Assigned1.insertItem(0, '\'' + str(armedMacros[0][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[0][0]) +'\'' + ' key, and will run ' + str(armedMacros[0][1]) + ' times.')
+        except:
+            pass
+        self.Assigned2.clear()
+        try:
+            self.Assigned2.insertItem(0, '\'' + str(armedMacros[1][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[1][0]) +'\'' + ' key, and will run ' + str(armedMacros[1][1]) + ' times.')
+        except:
+            pass
+        self.Assigned3.clear()
+        try:
+            self.Assigned3.insertItem(0, '\'' + str(armedMacros[2][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[2][0]) +'\'' + ' key, and will run ' + str(armedMacros[2][1]) + ' times.')
+        except:
+            pass
+        self.Assigned4.clear()
+        try:
+            self.Assigned4.insertItem(0, '\'' + str(armedMacros[3][2]) + '\'' + ' is bound to ' + '\'' + str(armedMacros[3][0]) +'\'' + ' key, and will run ' + str(armedMacros[3][1]) + ' times.')
+        except:
+            pass
+        self.saveArmedMacros()
+
+    def getMasterList(self):
+        global masterList
+        global armedMacros
+        try:
+            print('looking for master list')
+            oname = directory+'\\Saves\\AllMacros.json'
+            masterList = json.load(open(oname))
+            print('found master list')
+            self.updateMasterListWidget()
+        except:
+            print('did not find master list')
+        try:
+            print('looking for armed macros')
+            oname = directory+'\\Saves\\ArmedMacros.json'
+            armedMacros = json.load(open(oname))
+            self.updateArmedMacros()
+            print('found armed macros')
+        except:
+            print('no armed macros fount')
+    
+    def saveMasterList(self):
+        sname = directory+'\\Saves\\AllMacros.json'
+        with open(sname, 'w') as outfile:
+            json.dump(masterList, outfile)
+    
+    def saveArmedMacros(self):
+        sname = directory+'\\Saves\\ArmedMacros.json'
+        with open(sname, 'w') as outfile:
+            json.dump(armedMacros, outfile)
 
     def openInputs(self):
         inputWindow().exec_()
@@ -690,11 +740,11 @@ callDictionary = {
 def show(key):
     global running
     global armedMacros
-    print(str(key))
+    #print(str(key))
     for i in range(len(armedMacros)):
         macrokey = armedMacros[i][0]
         if str(key) == 'Key.' + macrokey:
-            print('hola')
+            #print('hola')
             begin(i, macrokey)
         '''
         if key == Key.esc:
@@ -722,7 +772,7 @@ def begin(macroNumber, macrokey):
                 k = Repeats
                 break
             callDictionary[armedMacros[macroNumber][i+3][0]](armedMacros[macroNumber][i+3][1], armedMacros[macroNumber][i+3][2])
-    print('its done')
+    #print('its done')
 
 def app():
     app = QApplication(sys.argv)

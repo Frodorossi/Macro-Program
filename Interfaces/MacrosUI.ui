@@ -26,7 +26,7 @@
       <x>670</x>
       <y>20</y>
       <width>261</width>
-      <height>451</height>
+      <height>481</height>
      </rect>
     </property>
    </widget>
@@ -209,34 +209,11 @@
      </item>
     </layout>
    </widget>
-   <widget class="QListWidget" name="Repeats">
-    <property name="geometry">
-     <rect>
-      <x>775</x>
-      <y>510</y>
-      <width>151</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="bRepeats">
-    <property name="geometry">
-     <rect>
-      <x>670</x>
-      <y>510</y>
-      <width>91</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string># of Repeats</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>669</x>
-      <y>470</y>
+      <x>670</x>
+      <y>500</y>
       <width>261</width>
       <height>41</height>
      </rect>
@@ -404,6 +381,19 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="bSaveMasterList">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>0</y>
+      <width>271</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save Master List</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
