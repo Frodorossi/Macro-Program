@@ -92,6 +92,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="bKeepScreenAwake">
+       <property name="text">
+        <string>Keep Screen Awake</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QWidget" name="layoutWidget_2">

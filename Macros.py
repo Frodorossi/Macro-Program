@@ -55,6 +55,7 @@ class window(QMainWindow):
         self.bMousePosition = self.findChild(QPushButton, 'bMousePosition')
         self.bClear = self.findChild(QPushButton, 'bClear')
         self.bSaveToMasterList = self.findChild(QPushButton, 'bSaveToMasterList')
+        self.bKeepScreenAwake = self.findChild(QPushButton, 'bKeepScreenAwake')
         
         self.MasterlistWidget = self.findChild(QListWidget, 'MasterlistWidget')
         self.Assigned1 = self.findChild(QListWidget, 'Assigned1')
@@ -99,6 +100,7 @@ class window(QMainWindow):
         self.bMousePosition.clicked.connect(self.openCoordinateWindow)
         self.bClear.clicked.connect(self.ListClear)
         self.bSaveToMasterList.clicked.connect(self.SaveToMasterList)
+        self.bKeepScreenAwake.clicked.connect(self.KeepScreenAwake)
 
         self.actionOpen.triggered.connect(self.openFile)
         self.actionSave.triggered.connect(self.saveFile)
@@ -461,6 +463,19 @@ class window(QMainWindow):
         self.EditlistWidget.insertItem(currentIndex+1, 'Click and Drag to: X'+str(x)+' Y'+str(y))
         self.EditlistWidget.setCurrentRow(currentIndex+1)
     
+    def KeepScreenAwake(self):
+        currentIndex = self.EditlistWidget.currentRow()
+        atime, ok = QInputDialog.getInt(self, 'Keep Awake', 'Input how long to keep the screen awake in minutes')
+        if ok and atime is not None:
+            self.KSA(atime, '', currentIndex)
+            editList.insert(currentIndex+1, ['mKeepScreenAwake', str(atime), ''])
+        else:
+            self.msg()
+    
+    def KSA(self, x, y, currentIndex):
+        self.EditlistWidget.insertItem(currentIndex+1, 'Keep screen awake for '+str(x)+' Minutes')
+        self.EditlistWidget.setCurrentRow(currentIndex+1)
+    
     #===========================================================================================
     
     #===========================================================================================
@@ -546,7 +561,8 @@ class window(QMainWindow):
     'mDoubleClick': DCl2,
     'mMouseMove': MM2,
     'mMoveRelative': MR2,
-    'mClickandDrag': CD2
+    'mClickandDrag': CD2,
+    'mKeepScreenAwake': KSA
     }
     
     def repopulateEditList(self):
@@ -721,6 +737,13 @@ def mClickandDrag(x, y):
     x1, y1 = pag.position()
     pag.dragTo(x1+int(x), y1+int(y), 1, button='left')
 
+def mKeepScreenAwake(x, y):
+    i = 0
+    while i < int(x):
+        time.sleep(60)
+        pag.press('f24')
+        i += 1
+
 callDictionary = {
     'mhotKey': mhotKey,
     'mPress': mPress,
@@ -734,7 +757,8 @@ callDictionary = {
     'mDoubleClick': mDoubleClick,
     'mMouseMove': mMouseMove,
     'mMoveRelative': mMoveRelative,
-    'mClickandDrag': mClickandDrag
+    'mClickandDrag': mClickandDrag,
+    'mKeepScreenAwake': mKeepScreenAwake
 }
     
 def show(key):
